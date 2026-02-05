@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 217.2 32.6% 17.5%;
+    --card-foreground: 210 40% 98%;
+    --primary: 14 100% 57%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --ring: 14 100% 57%;
+  }
+}
+
+@layer base {
+  * { @apply border-border; }
+  body { @apply bg-background text-foreground; }
+  html { scroll-behavior: smooth; }
+}
+
+@layer components {
+  .prose-skill {
+    @apply max-w-none;
+  }
+  .prose-skill h1 { @apply text-3xl font-bold mb-4 mt-8 text-foreground; }
+  .prose-skill h2 { @apply text-2xl font-semibold mb-3 mt-6 border-b border-border pb-2 text-foreground; }
+  .prose-skill h3 { @apply text-xl font-semibold mb-2 mt-4 text-foreground; }
+  .prose-skill p { @apply mb-4 leading-7 text-foreground; }
+  .prose-skill a { @apply text-primary hover:underline; }
+  .prose-skill code { @apply bg-muted px-1.5 py-0.5 rounded text-sm font-mono text-foreground; }
+  .prose-skill pre { @apply bg-muted p-4 rounded-lg overflow-x-auto my-4; }
+  .prose-skill pre code { @apply bg-transparent p-0; }
+  .prose-skill ul { @apply list-disc list-inside mb-4 space-y-2; }
+  .prose-skill ol { @apply list-decimal list-inside mb-4 space-y-2; }
+  .prose-skill blockquote { @apply border-l-4 border-primary pl-4 italic my-4 text-muted-foreground; }
+  .prose-skill table { @apply w-full border-collapse my-4; }
+  .prose-skill th { @apply border border-border bg-muted px-4 py-2 text-left font-semibold; }
+  .prose-skill td { @apply border border-border px-4 py-2; }
+  .prose-skill strong { @apply font-semibold text-foreground; }
+  .prose-skill hr { @apply border-border my-8; }
+}
