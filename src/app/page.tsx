@@ -64,11 +64,11 @@ export default function HomePage() {
               <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
                 <Shield className="h-6 w-6 text-primary" />
               </div>
-              <CardTitle className="text-lg">Secure by Design</CardTitle>
+              <CardTitle className="text-lg">Autonomous Onchain Transactions</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">
-                Your keys never leave your machine. All operations are signed locally with enterprise-grade security.
+                Let your AI agent execute blockchain transactions autonomously. From token swaps to DeFi operations, all handled securely without human intervention.
               </p>
             </CardContent>
           </Card>
@@ -194,17 +194,6 @@ export default function HomePage() {
                 <li>• DeFi yield farming</li>
                 <li>• Social media integrations</li>
               </ul>
-              <div className="mt-6">
-                <a 
-                  href="https://github.com/OpenClawChain" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                >
-                  <Button variant="outline" className="w-full">
-                    Contribute a Skill
-                  </Button>
-                </a>
-              </div>
             </CardContent>
           </Card>
         </div>
