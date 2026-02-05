@@ -137,21 +137,21 @@ export default function HomePage() {
                 </div>
 
                 <div className="flex gap-3 pt-2">
-                  <Link href="/skills/occ-usdc" className="flex-1">
-                    <Button className="w-full" variant="default">
-                      View Details
-                    </Button>
-                  </Link>
                   <a 
                     href="/occ-usdc.md" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="flex-1"
                   >
-                    <Button className="w-full" variant="outline">
-                      Raw Markdown
+                    <Button className="w-full" variant="default">
+                      skill.md
                     </Button>
                   </a>
+                  <Link href="/skills/occ-usdc" className="flex-1">
+                    <Button className="w-full" variant="outline">
+                      View Details
+                    </Button>
+                  </Link>
                 </div>
                 <div className="flex gap-3 pt-2">
                   <a 
