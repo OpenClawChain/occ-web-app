@@ -143,6 +143,18 @@ export default function HomePage() {
                     </Button>
                   </Link>
                   <a 
+                    href="/occ-usdc.md" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="flex-1"
+                  >
+                    <Button className="w-full" variant="outline">
+                      Raw Markdown
+                    </Button>
+                  </a>
+                </div>
+                <div className="flex gap-3 pt-2">
+                  <a 
                     href="https://github.com/OpenClawChain/occ-swap-cli" 
                     target="_blank" 
                     rel="noopener noreferrer"
@@ -150,6 +162,16 @@ export default function HomePage() {
                   >
                     <Button className="w-full" variant="outline">
                       GitHub
+                    </Button>
+                  </a>
+                  <a 
+                    href="https://www.npmjs.com/package/@openclawchain/swap-cli" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="flex-1"
+                  >
+                    <Button className="w-full" variant="outline">
+                      npm
                     </Button>
                   </a>
                 </div>
