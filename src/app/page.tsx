@@ -179,6 +179,88 @@ export default function HomePage() {
             </CardContent>
           </Card>
 
+          {/* Starknet Swap Skill */}
+          <Card className="hover:border-primary/50 transition-all hover:shadow-lg">
+            <CardHeader>
+              <div className="flex items-start justify-between">
+                <div>
+                  <CardTitle>Starknet Token Swap CLI</CardTitle>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Swap tokens on Starknet Sepolia testnet using AVNU routing
+                  </p>
+                </div>
+                <span className="inline-flex items-center rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary">
+                  v1.0.0
+                </span>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex flex-wrap gap-2">
+                  <span className="inline-flex items-center rounded-md bg-secondary px-2 py-1 text-xs font-medium">
+                    Starknet
+                  </span>
+                  <span className="inline-flex items-center rounded-md bg-secondary px-2 py-1 text-xs font-medium">
+                    Sepolia
+                  </span>
+                  <span className="inline-flex items-center rounded-md bg-secondary px-2 py-1 text-xs font-medium">
+                    AVNU
+                  </span>
+                  <span className="inline-flex items-center rounded-md bg-secondary px-2 py-1 text-xs font-medium">
+                    Swaps
+                  </span>
+                </div>
+                
+                <div className="text-sm text-muted-foreground space-y-1">
+                  <p>✓ Swap tokens via AVNU protocol</p>
+                  <p>✓ Starknet Sepolia testnet support</p>
+                  <p>✓ Local transaction signing</p>
+                  <p>✓ Balance checking & receipts</p>
+                </div>
+
+                <div className="flex gap-3 pt-2">
+                  <a 
+                    href="/claw-strk.md" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="flex-1"
+                  >
+                    <Button className="w-full" variant="default">
+                      skill.md
+                    </Button>
+                  </a>
+                  <Link href="/skills/claw-strk" className="flex-1">
+                    <Button className="w-full" variant="outline">
+                      View Details
+                    </Button>
+                  </Link>
+                </div>
+                <div className="flex gap-3 pt-2">
+                  <a 
+                    href="https://github.com/OpenClawChain/claw-strk" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="flex-1"
+                  >
+                    <Button className="w-full" variant="outline">
+                      GitHub
+                    </Button>
+                  </a>
+                  <a 
+                    href="https://www.npmjs.com/package/@openclawchain/claw-strk" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="flex-1"
+                  >
+                    <Button className="w-full" variant="outline">
+                      npm
+                    </Button>
+                  </a>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Placeholder for more skills */}
           <Card className="border-dashed hover:border-primary/50 transition-colors">
             <CardHeader>
