@@ -59,13 +59,13 @@ export default function SkillContent({ markdownContent }: { markdownContent: str
         <div className="mb-8">
           <div className="flex items-start justify-between mb-4">
             <div>
-              <h1 className="text-3xl font-bold mb-2">Starknet Token Swap CLI</h1>
+              <h1 className="text-3xl font-bold mb-2">claw-strk</h1>
               <p className="text-muted-foreground">
-                Swap tokens on Starknet Sepolia testnet using AVNU routing
+                Starknet Sepolia CLI for swaps, lending, paywalls, and more
               </p>
             </div>
             <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
-              v1.0.0
+              Prototype
             </span>
           </div>
           
@@ -80,7 +80,10 @@ export default function SkillContent({ markdownContent }: { markdownContent: str
               AVNU
             </span>
             <span className="inline-flex items-center rounded-md bg-secondary px-2.5 py-1 text-xs font-medium">
-              Token Swaps
+              DeFi
+            </span>
+            <span className="inline-flex items-center rounded-md bg-secondary px-2.5 py-1 text-xs font-medium">
+              NFT
             </span>
           </div>
 

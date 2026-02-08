@@ -184,7 +184,7 @@ export default function HomePage() {
             <CardHeader>
               <div className="flex items-start justify-between">
                 <div>
-                  <CardTitle>Starknet Token Swap CLI</CardTitle>
+                  <CardTitle>Claw Strk</CardTitle>
                   <p className="text-sm text-muted-foreground mt-2">
                     Swap tokens on Starknet Sepolia testnet using AVNU routing
                   </p>
