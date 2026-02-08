@@ -1,255 +1,310 @@
-# claw-strk (skill)
+# claw-strk (Starknet Sepolia prototype)
 
-Swap tokens on **Starknet Sepolia testnet** using **AVNU** routing via the `claw-strk` CLI.
+`claw-strk` is a **Sepolia-first** Starknet CLI for quickly testing:
 
-This is a *single-repo* CLI project (not a monorepo).
+- Swaps via **AVNU**
+- Demo **lending** pool flows
+- **x402** paywalled HTTP requests (client-side)
+- Deploy/test demo **ERC20** + **ERC721 (NFT)** contracts
+- A simple `.claw` name registry (StarknetID-like MVP for Sepolia)
 
----
-
-## What this CLI does
-
-- Fetches swap quotes from **AVNU Sepolia API**: `https://sepolia.api.avnu.fi`
-- Executes swaps on **Starknet Sepolia** by signing transactions with your local key
-- Can check transaction receipts
-- Can print balances for supported tokens
+> This is prototype tooling for **Starknet Sepolia**.
 
 ---
 
-## Requirements
+## 1) Install
 
-- Node.js + pnpm
-- A funded Starknet Sepolia account:
-  - You need **Sepolia ETH on Starknet** for gas (and first-time account deployment)
-  - You need some of the token you want to sell (e.g. STRK)
-
----
-
-## Setup (one-time)
-
-From the repo root:
+Install globally from npm:
 
 ```bash
-pnpm install
-pnpm build
+npm install -g @openclawchain/claw-strk
+# or
+pnpm add -g @openclawchain/claw-strk
 ```
 
-Create `.env`:
+Run:
 
 ```bash
-cp .env.example .env
+claw-strk --help
 ```
 
-Fill in:
+---
 
-```bash
+## 2) Configure (.env)
+
+The CLI loads env in this order:
+
+1) `--env <path>`
+2) `./.env`
+3) `~/.claw-strk/.env`
+
+Minimum required:
+
+```env
 STARKNET_ACCOUNT_ADDRESS=0x...
 STARKNET_PRIVATE_KEY=0x...
-# optional; defaults to a public Sepolia RPC
-STARKNET_RPC_URL=https://starknet-sepolia-rpc.publicnode.com
+STARKNET_RPC_URL=https://starknet-sepolia.g.alchemy.com/v2/<key>
 ```
 
-Safety:
-- `.env` is gitignored. **Do not paste private keys into chat.**
+Optional:
+
+```env
+# x402 Server (defaults to OpenClawChain hosted server)
+X402_SERVER_URL=https://stark-facilitator.openclawchain.org
+```
+
+Create a template:
+
+```bash
+claw-strk init
+```
 
 ---
 
-## List supported tokens
+## 3) CLI examples (mandatory features)
 
+### A) Swap (AVNU)
+
+Quote:
 ```bash
-pnpm dev tokens
+claw-strk quote --sell STRK --buy USDC --amount 1
 ```
 
-(Or after build/install globally: `claw-strk tokens`.)
-
----
-
-## x402 payments (Starknet)
-
-`claw-strk` can act as an x402 **client** on Starknet Sepolia.
-
-It supports:
-- generating `X-PAYMENT` (base64) headers (`x402 pay`)
-- approving a facilitator to spend tokens (`x402 approve`)
-- making an HTTP request that auto-handles 402 → sign → retry (`x402 request`)
-
-### Local test backend (adipundir/starknet-x402)
-
-To run a local x402-protected API + facilitator (Sepolia settlement), you can use:
-`https://github.com/adipundir/starknet-x402`
-
-From your OpenClaw workspace:
-
+Swap:
 ```bash
-cd /Users/peterclaw/.openclaw/workspace
-git clone https://github.com/adipundir/starknet-x402.git
-cd starknet-x402
-cp env.example .env.local
-# Optional: replace any dead RPC endpoints in .env.local
-npm ci
-npm run dev
+claw-strk swap --sell STRK --buy USDC --amount 1 --slippage 5
 ```
 
-This starts Next.js at `http://localhost:3000` and exposes:
-- Protected endpoint: `http://localhost:3000/api/protected/weather`
-- Facilitator: `http://localhost:3000/api/facilitator`
+### B) Lending
 
-Then, from `claw-strk`:
+List demo pools:
+```bash
+claw-strk lend pools
+```
+
+Run the demo (deposit/borrow/repay/withdraw):
+```bash
+claw-strk lend demo
+```
+
+USDC borrow example (STRK collateral → borrow USDC):
 
 ```bash
-# one-time approve (spender = facilitator address from starknet-x402 .env.local)
-pnpm dev x402 approve --token STRK --spender $NEXT_PUBLIC_FACILITATOR_ADDRESS --amount 1
+# show pool + price
+claw-strk lend pool --pool-id strk-usdc
 
-# paid request end-to-end
-pnpm dev x402 request \
-  --url http://localhost:3000/api/protected/weather \
+# deposit 1 STRK as collateral
+claw-strk lend deposit --pool-id strk-usdc --amount 1
+
+# borrow a tiny amount of USDC (6 decimals)
+claw-strk lend borrow --pool-id strk-usdc --amount 0.005
+
+# repay
+claw-strk lend repay --pool-id strk-usdc --amount 0.005
+
+# withdraw collateral
+claw-strk lend withdraw --pool-id strk-usdc --amount 1
+```
+
+### C) x402 payment (paywalled HTTP)
+
+Discover requirements (no payment, defaults to OpenClawChain server):
+
+```bash
+claw-strk x402 discover
+```
+
+Or discover a specific endpoint:
+
+```bash
+claw-strk x402 discover \
+  --url https://stark-facilitator.openclawchain.org/api/protected/chainstatus
+```
+
+Paywall endpoint example (discover → pay → retry, defaults to OpenClawChain server):
+
+```bash
+claw-strk x402 request \
   --network sepolia \
-  --facilitator http://localhost:3000/api/facilitator
+  --auto-approve
 ```
 
-### Commands
-
-Generate a payment header (no HTTP):
+Or specify a custom endpoint:
 
 ```bash
-pnpm dev x402 pay --to 0xPAYTO --token STRK --amount 0.01 --network sepolia
+claw-strk x402 request \
+  --url https://stark-facilitator.openclawchain.org/api/protected/chainstatus \
+  --network sepolia \
+  --auto-approve
 ```
 
-Approve facilitator:
+Show only the paywalled content (no JSON wrapper):
 
 ```bash
-pnpm dev x402 approve --token STRK --spender 0xFACILITATOR --amount 1
+claw-strk x402 request \
+  --network sepolia \
+  --auto-approve \
+  --raw
 ```
 
-Make a paid request:
+Or print JSON + then print body:
 
 ```bash
-pnpm dev x402 request --url https://your.api/paid --network sepolia --facilitator https://your.facilitator
-```
-
-## Starknet ID (StarknetID)
-
-This CLI includes basic Starknet ID helpers so an agent can associate itself with a `.stark` name.
-
-### Check your current Starknet ID name
-
-```bash
-pnpm dev starkid whoami
-```
-
-### Resolve a name to an address
-
-```bash
-pnpm dev starkid resolve --name someone.stark
-```
-
-### Register a name (onchain)
-
-**Warning:** registering a `.stark` name costs gas and may require ETH payment/approval flows.
-
-Start with a dry-run (no tx sent):
-
-```bash
-pnpm dev starkid register --name myagent.stark --days 365
-```
-
-To actually send the tx (spends gas):
-
-```bash
-pnpm dev starkid register --name myagent.stark --days 365 --send
-```
-
-## Check balances
-
-Show balances for *all* supported tokens for your configured account:
-
-```bash
-pnpm dev balance
-```
-
-Show balances for specific tokens:
-
-```bash
-pnpm dev balance --token ETH STRK USDC USDT WBTC wstETH EKUBO
-```
-
----
-
-## Quote a swap
-
-Example: quote **STRK → USDC** selling `1` STRK:
-
-```bash
-pnpm dev quote --sell STRK --buy USDC --amount 1
-```
-
-Example: quote **STRK → ETH**:
-
-```bash
-pnpm dev quote --sell STRK --buy ETH --amount 1
-```
-
-If you see `No quotes returned`, it usually means **no route/liquidity** is available on Sepolia for that pair.
-
----
-
-## Execute a swap
-
-Example: swap **STRK → USDC** (real tx):
-
-```bash
-pnpm dev swap --sell STRK --buy USDC --amount 1 --slippage 0.5
-```
-
-Dry-run (no transaction, just prints the best quote):
-
-```bash
-pnpm dev swap --sell STRK --buy USDC --amount 1 --slippage 0.5 --dry-run
+claw-strk x402 request \
+  --network sepolia \
+  --auto-approve \
+  --print-body
 ```
 
 Notes:
-- `--slippage` is a percent (e.g. `0.5` = 0.5%).
-- Each swap costs gas. Use small amounts on testnet.
+- `x402 request` first calls the URL normally; if the server replies **402**, it reads the required payment details (`accepts[0]`) and retries with `X-PAYMENT`.
+- `--auto-approve` will approve **exactly** `maxAmountRequired` to the spender (one-time per amount).
+- Override spender/facilitator if needed:
 
----
+Example discovery response (from the hosted paywall):
 
-## Check transaction status
+```json
+{
+  "status": 402,
+  "ok": false,
+  "x402Version": 1,
+  "accepts": [
+    {
+      "scheme": "exact",
+      "network": "starknet-sepolia",
+      "maxAmountRequired": "1000",
+      "resource": "/chainstatus",
+      "payTo": "0x04dA15eb06D6D01C4907eb4876Cc29BdeF21A84bD71fB34d0369c83b8744D104",
+      "asset": "0x053b40a647cedfca6ca84f542a0fe36736031905a9639a7f19a3c1e66bfd5080",
+      "assetSymbol": "USDC",
+      "assetDecimals": 6,
+      "maxAmountHuman": "0.001"
+    }
+  ],
+  "error": null
+}
+```
+
+Example paywalled content response (after payment):
+
+```json
+{
+  "ok": true,
+  "network": "starknet-sepolia",
+  "rpcUrl": "https://starknet-sepolia.g.alchemy.com/starknet/version/rpc/v0_10/<key>",
+  "time": "2026-..."
+}
+```
 
 ```bash
-pnpm dev status --tx 0xYOUR_TX_HASH
+claw-strk x402 request \
+  --url <resource-url> \
+  --facilitator <facilitator-base-url> \
+  --spender <spender-address> \
+  --auto-approve
+```
+
+Verify (no settlement):
+
+```bash
+claw-strk x402 verify \
+  --url https://stark-facilitator.openclawchain.org/api/protected/chainstatus \
+  --to 0x04dA15eb06D6D01C4907eb4876Cc29BdeF21A84bD71fB34d0369c83b8744D104 \
+  --token USDC \
+  --amount 0.001 \
+  --network sepolia
+```
+
+Generate an X-PAYMENT header (advanced/manual):
+
+```bash
+claw-strk x402 pay \
+  --to 0x04dA15eb06D6D01C4907eb4876Cc29BdeF21A84bD71fB34d0369c83b8744D104 \
+  --token USDC \
+  --amount 0.001 \
+  --network sepolia
+```
+
+### D) `.claw` domain
+
+Register:
+```bash
+claw-strk claw register --name bobio.claw --metadata '{"owner":"bobio"}' --network sepolia
+```
+
+Resolve:
+```bash
+claw-strk claw resolve --name bobio.claw --network sepolia
+```
+
+Get full record:
+```bash
+claw-strk claw get --name bobio.claw --network sepolia
+```
+
+### E) ERC20 demo token
+
+Create:
+```bash
+claw-strk token create --kind mintable --name "Mint Token" --symbol MNT --decimals 6 --initial 0
+```
+
+Mint (owner-only):
+```bash
+claw-strk token mint --token <address> --to <address> --amount 100 --decimals 6
+```
+
+### F) NFT (ERC721)
+
+Create collection:
+```bash
+claw-strk nft create --name "OpenClawMinion" --symbol "CLAW" --network sepolia
+```
+
+Mint:
+```bash
+claw-strk nft mint --contract <address> --id 1 --network sepolia
+```
+
+Check ownership (ERC721 `balance_of`):
+```bash
+claw-strk nft balance --contract <address>
 ```
 
 ---
 
-## Explorer (Voyager)
+## 4) References
 
-Starknet Sepolia Voyager:
-- Account/contract: `https://sepolia.voyager.online/contract/<ACCOUNT_ADDRESS>`
-- Tx: `https://sepolia.voyager.online/tx/<TX_HASH>`
+### 4.1 Supported tokens (swap)
 
----
+Starknet Sepolia bridged token addresses:
 
-## Troubleshooting
+- STRK: `0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d`
+- ETH:  `0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7`
+- USDC: `0x053b40a647cedfca6ca84f542a0fe36736031905a9639a7f19a3c1e66bfd5080`
+- USDT: `0x02ab8758891e84b968ff11361789070c6b1af2df618d6d2f4a78b0757573c6eb`
+- WBTC: `0x00452bd5c0512a61df7c7be8cfea5e4f893cb40e126bdc40aee6054db955129e`
+- wstETH: `0x030de54c07e57818ae4a1210f2a3018a0b9521b8f8ae5206605684741650ac25`
+- EKUBO: `0x01fad7c03b2ea7fbef306764e20977f8d4eae6191b3a54e4514cc5fc9d19e569`
 
-### RPC errors / provider down
+### 4.2 x402 default server (Sepolia)
 
-If the default RPC is flaky, set your own:
+- Facilitator base: `https://stark-facilitator.openclawchain.org/api/facilitator`
+- Paywalled base: `https://stark-facilitator.openclawchain.org/api/protected`
+- Example resource: `GET /chainstatus`
+- Default spender (facilitator account):
+  - `0x04dA15eb06D6D01C4907eb4876Cc29BdeF21A84bD71fB34d0369c83b8744D104`
 
-```bash
-STARKNET_RPC_URL=...your_rpc...
-```
+### 4.3 Lending demo pool (Sepolia)
 
-### “Contract not found” for your account
+Pool id: `strk-usdc`
 
-That usually means the account is **not deployed yet**. You must deploy the account contract once (costs ETH) before swaps can be executed.
+- Registry: `0x183ca728ea9432536ce728416dcb3126373f18a2e5cd46327a90dc2f1f93e15`
+- Pool: `0x04bdad5b68e73eaa8784a488f02b6ead417a4e5c0472566027908149f115979b`
 
-### “No quotes returned”
+### 4.4 Deployed contracts (Sepolia)
 
-No AVNU route exists on Sepolia for that pair right now.
-
----
-
-## Security
-
-- Private keys must remain local.
-- Prefer creating a throwaway test account for demos.
-- Never commit `.env`.
+| Feature | Contract | Address |
+|---|---|---|
+| NFT collection (OpenClawMinion / CLAWSTRK) | MintableERC721 | `0x49782e9d0ce5eb2b1122fdb6de8498a6717389a8ce73768d69c3995c72d1ecd` |
+| `.claw` registry | ClawIdRegistry | `0x18fe5d665fe78d1e9032d85c5e3fd6f99492a608d197f4cb048a2246f7d68eb` |
