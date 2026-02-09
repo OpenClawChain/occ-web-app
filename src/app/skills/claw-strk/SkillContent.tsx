@@ -29,6 +29,15 @@ export default function SkillContent({ markdownContent }: { markdownContent: str
             </Link>
             <div className="flex gap-3">
               <a 
+                href="/claw-strk.md" 
+                target="_blank" 
+                rel="noopener noreferrer"
+              >
+                <Button size="sm">
+                  skill.md
+                </Button>
+              </a>
+              <a 
                 href="https://github.com/OpenClawChain/claw-strk" 
                 target="_blank" 
                 rel="noopener noreferrer"
@@ -43,9 +52,9 @@ export default function SkillContent({ markdownContent }: { markdownContent: str
                 target="_blank" 
                 rel="noopener noreferrer"
               >
-                <Button size="sm">
+                <Button variant="outline" size="sm">
                   <Download className="h-4 w-4 mr-2" />
-                  Install
+                  Package
                 </Button>
               </a>
             </div>
